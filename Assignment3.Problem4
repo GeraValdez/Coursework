@@ -1,0 +1,83 @@
+#Reload the data
+foo <- read.csv("https://course-resources.minerva.kgi.edu/uploaded_files/mke/00086677-3767/peace.csv")
+foo <- foo[c(-19, -47), ]
+
+Tr <- rep(0, length(foo$untype))
+foo$Tr[which(foo$untype == "None")] <- 0
+foo$Tr[which(foo$untype != "None")] <- 1
+View(foo$Tr)
+View(foo)
+
+###
+
+#Logistic Regression
+balance <- MatchBalance(Tr ~ wartype + logcost + wardur + factnum + factnum2 + trnsfcap + develop + exp + decade + treaty, data = foo, nboots=500)
+summary(balance)
+
+glm3 <- glm(pbs2l ~ wartype + logcost + wardur + factnum + factnum2 + trnsfcap + develop + exp + decade + treaty + Tr, data = foo, family = binomial)
+summary(glm3)
+
+summary(foo$pbs5l)
+NAs <- is.na(foo$pbs5l)
+
+glm4 <- glm(pbs5l ~ wartype + logcost + wardur + factnum + factnum2 + trnsfcap + develop + exp + decade + treaty + Tr, data = foo[!NAs,], family = binomial)
+summary(glm4)
+
+#Propensity Score Matching
+counter_factual <- foo
+Tr <- foo$Tr == 1
+counter_factual$Tr[Tr] <- as.numeric(foo$Tr[Tr]!=1)
+predict.counter_factual_twoyears <- predict(glm3, newdata=counter_factual, type="response")
+
+unit_treat_effects <- NA
+unit_treat_effects[Tr] <- glm3$fitted.values[Tr] - predict.counter_factual_twoyears[Tr]
+unit_treat_effects[!Tr] <- predict.counter_factual_twoyears[!Tr] - glm3$fitted.values[!Tr]
+mean(unit_treat_effects)
+
+counter_factual <- foo[!NAs,]
+Tr <- foo$Tr == 1
+counter_factual$Tr[Tr] <- as.numeric(foo$Tr[Tr]!=1)
+predict.counter_factual_fiveyears <- predict(glm4, newdata=counter_factual, type="response")
+unit_treat_effects <- rep(NA, nrow(foo[!NAs,]))
+
+unit_treat_effects[Tr] <- glm4$fitted.values[Tr] - counter.factuals[Tr]
+unit_treat_effects[!Tr] <- counter.factuals[!Tr] - glm4$fitted.values[!Tr]
+mean(unit_treat_effects)
+
+glm5 <- glm(Tr ~ wartype + logcost + wardur + factnum + factnum2 + trnsfcap + develop + exp + decade + treaty, data = foo, family = binomial)
+summary(glm5)
+
+X <- glm5$fitted.values
+Y1 <- foo$pbs2l
+Y2 <- foo$pbs5l
+m1  <- Match(Y=Y1, Tr=Tr, X=X, M=1, BiasAdjust = T)
+summary(m1)
+m1$est.noadj
+balance2 <- MatchBalance(Tr ~ wartype + logcost + wardur + factnum + factnum2 +
+                    trnsfcap + develop + exp + decade + treaty, data = foo,
+                    match.out = m1, nboots=500)
+
+mask <- which(!is.na(Y2))
+m2  <- Match(Y=Y2[mask], Tr=Tr[mask], X=X[mask], M=1, BiasAdjust = T)
+summary(m2)
+m2$est.noadj
+balance3 <- MatchBalance(Tr ~ wartype + logcost + wardur + factnum + factnum2 +
+                      trnsfcap + develop + exp + decade + treaty, data = foo,
+                    match.out = m2, nboots=500)
+
+#Genetic Matching
+library(Matching)
+
+attach(foo)
+X = cbind(glm5$fitted.values, wartype, logcost, foo$wardur, factnum, factnum2, trnsfcap, develop, exp, decade, treaty)
+detach(foo)
+genout <- GenMatch(Tr=Tr, X=X, M=2, pop.size=200, max.generations=15, wait.generations=25, replace=FALSE)
+m3  <- Match(Y=Y1, Tr=Tr, X=X, M=2, BiasAdjust = T, replace = FALSE, Weight.matrix = genout)
+summary(m3)
+m3$est.noadj
+balance4 <- MatchBalance(Tr ~ wartype + logcost + wardur + factnum + factnum2 + trnsfcap + develop + exp + decade + treaty, data = foo, match.out = m3, nboots=500)
+genout1 <- GenMatch(Tr=Tr[mask], X=X[mask,], M=2, pop.size=200, max.generations=10, wait.generations=25, replace=FALSE)
+m4  <- Match(Y=Y2[mask], Tr=Tr[mask], X=X[mask,], M=2, BiasAdjust = T, Weight.matrix = genout1)
+summary(m4)
+m4$est.noadj
+balance5 <- MatchBalance(Tr ~ wartype + logcost + wardur + factnum + factnum2 + trnsfcap + develop + exp + decade + treaty, data = foo, match.out = m3, nboots=500)
