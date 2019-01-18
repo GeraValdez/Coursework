@@ -1,15 +1,57 @@
 import random
-lst = []
-for x in range (0, 10):
-    lst.append(random.randint(0, 100))
-print lst
+import sys
 
-def insertion_sort(lst):
-    pos = 0
-    while pos < len(lst) and lst[]
-    for i in range (len(lst)):
-        if lst[pos] > lst[pos+1]:
-            
-        if lst[i] > lst[i+1]:
-            lst[i]
-    lst[0]
+integer = 7
+
+def random_list(integer):
+    lst = []
+    for x in range (integer):
+        lst.append(random.randint(0, 100))
+    return lst
+
+def insertion_sort(lst): 
+    count_insertion_sort = 0
+    for index in range(1, len(lst)): 
+        key = lst[index] 
+        pos = index-1
+        while pos >=0 and key < lst[pos]:
+            lst[pos+1] = lst[pos]
+            pos += -1
+            count_insertion_sort += 1
+        lst[pos+1] = key
+    print lst
+    print "Number of steps to sort this list using insertion sort:", count_insertion_sort
+        
+def selection_sort(lst):
+    count_selection_sort = 0
+    for i in range(len(lst)):
+        min_index = i
+        for j in range(i+1, len(lst)):
+            if lst[j] < lst[min_index]:
+                min_index = j
+                count_selection_sort += 1
+        lst[i], lst[min_index] = lst[min_index], lst[i]
+    print lst
+    print "Number of steps to sort this list using selection sort:", count_selection_sort
+    
+def bubble_sort(lst):
+    count_bubble_sort = 0
+    for i in range(len(lst)):
+        for j in range(0, len(lst)-i-1):
+            count_bubble_sort += 1
+            if lst[j] > lst[j+1]:
+                lst[j],lst[j+1] = lst[j+1],lst[j]
+    print lst
+    print "Number of steps to sort this list using bubble sort:", count_bubble_sort
+
+lst = random_list(integer)
+print lst
+insertion_sort(lst)
+
+lst = random_list(integer)
+print lst
+selection_sort(lst)
+
+lst = random_list(integer)
+print lst
+bubble_sort(lst)
