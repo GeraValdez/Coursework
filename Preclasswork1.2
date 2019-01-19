@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 
 integer = 7
 
@@ -19,7 +20,7 @@ def insertion_sort(lst):
             pos += -1
             count_insertion_sort += 1
         lst[pos+1] = key
-    print lst
+    print "sorted array:", lst
     print "Number of steps to sort this list using insertion sort:", count_insertion_sort
         
 def selection_sort(lst):
@@ -31,7 +32,7 @@ def selection_sort(lst):
                 min_index = j
                 count_selection_sort += 1
         lst[i], lst[min_index] = lst[min_index], lst[i]
-    print lst
+    print "sorted array:", lst
     print "Number of steps to sort this list using selection sort:", count_selection_sort
     
 def bubble_sort(lst):
@@ -41,17 +42,27 @@ def bubble_sort(lst):
             count_bubble_sort += 1
             if lst[j] > lst[j+1]:
                 lst[j],lst[j+1] = lst[j+1],lst[j]
-    print lst
+    print "sorted array:", lst
     print "Number of steps to sort this list using bubble sort:", count_bubble_sort
-
+    
+    
+start_insertion_sort = time.time()
 lst = random_list(integer)
-print lst
+print "random array:", lst
 insertion_sort(lst)
+end_insertion_sort = time.time()
+print "Time insertion sort takes:", (end_insertion_sort-start_insertion_sort), "seconds"
 
+start_selection_sort = time.time()
 lst = random_list(integer)
-print lst
+print "random array:", lst
 selection_sort(lst)
+end_selection_sort = time.time()
+print "Time selection sort takes:", (end_selection_sort-start_selection_sort), "seconds"
 
+start_bubble_sort = time.time()
 lst = random_list(integer)
-print lst
+print "random array:", lst
 bubble_sort(lst)
+end_bubble_sort = time.time()
+print "Time bubble sort takes:", (end_bubble_sort-start_bubble_sort), "seconds"
