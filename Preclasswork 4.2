@@ -1,0 +1,44 @@
+#Hire Assistant Problem
+
+import random
+
+#N = number of assistants interviewed, and quality is a list of how good from 0 to 1 every candidate is
+N = 10
+quality = []
+for i in range(N):
+    quality.append(random.random())
+    
+i = 0
+best = 0
+hired = []
+while i < len(quality):
+    if quality[i] > best:
+        best = quality[i]
+        hired.append(best)
+    i += 1
+
+print hired
+
+#############################
+
+#Hats Problem
+
+import random
+
+N = 100
+hats = []
+correct_hats = []
+
+#Assuming that the hats are numbered from 1 to 100, I give them away randomly
+#To model this I shuffle the array. 
+#The value hats[i] represents the number of the hat received by person i 
+
+for i in range(N):
+    hats.append(i)
+random.shuffle(hats)
+
+for i in range(len(hats)):
+    if hats[i] == i:
+        correct_hats.append(i)
+print len(correct_hats)
+print correct_hats
