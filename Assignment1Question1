@@ -75,7 +75,7 @@ def threeway_mergesort(lst):
         right = threeway_mergesort(right)
     return (threeway_merge(left, middle, right))
 
-random.seed(6)
+random.seed(5)
     
 lst1 = random_list(integer)
 print (lst1)
@@ -89,9 +89,11 @@ lst3 = random_list(integer)
 print (lst3)
 print (threeway_mergesort(lst3))
 
-#[80, 83, 48, 26, 0]
-#[0, 26, 48, 80, 83]
-#[66, 47, 76, 37, 77]
-#[37, 47, 66, 76, 77]
-#[27, 80, 73, 41, 54]
-#[27, 41, 54, 73, 80]
+#[62, 74, 80, 95, 74, 93, 2, 47, 95, 65]
+#[2, 47, 62, 65, 74, 74, 80, 93, 95, 95]
+
+#[90, 11, 47, 24, 54, 57, 1, 21, 28, 92]
+#[1, 11, 21, 24, 28, 47, 54, 57, 90, 92]
+
+#[77, 16, 80, 14, 62, 12, 0, 88, 21, 21]
+#[0, 12, 14, 16, 21, 21, 62, 77, 80, 88]
