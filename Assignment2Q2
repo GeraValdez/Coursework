@@ -1,0 +1,51 @@
+#Imagine that I have an online library with 1000 words
+
+import random 
+import string 
+import hashlib
+
+m = 10000 #size of the bloom filter
+n = 1000 #size of my dictionary
+# k = 4, thus the probability of false positives is 0.012 or about 1 in a 100
+
+bloomfilter = [0] * m
+lst = [] #this array will contain the list of books
+lst_hash = []
+
+for i in range(n): #generate list of 12 letter strings representing book names
+  lst.append(''.join(random.choice(string.ascii_letters) for x in range(12)))
+  
+def add(word):
+  a = hash(word)%m
+  b = int(hashlib.md5(word.encode('utf-8')).hexdigest(),16)%m
+  c = int(hashlib.sha1(word.encode('utf-8')).hexdigest(),16)%m
+  d = int(hashlib.sha224(word.encode('utf-8')).hexdigest(),16)%m
+  bloomfilter[a-1] += 1
+  bloomfilter[b-1] += 1
+  bloomfilter[c-1] += 1
+  bloomfilter[d-1] += 1
+  
+def contain(word)
+  a = hash(word)%m
+  b = int(hashlib.md5(word.encode('utf-8')).hexdigest(),16)%m
+  c = int(hashlib.sha1(word.encode('utf-8')).hexdigest(),16)%m
+  d = int(hashlib.sha224(word.encode('utf-8')).hexdigest(),16)%m
+  if bloomfilter[a-1]>0 and bloomfilter[b-1]>0 and bloomfilter[c-1]>0 \ 
+  and bloomfilter[d-1]>0:
+    return True
+  else:
+    return False
+  
+def delete(word):
+  if contain(word) == True:
+    a = hash(word)%m
+    b = int(hashlib.md5(word.encode('utf-8')).hexdigest(),16)%m
+    c = int(hashlib.sha1(word.encode('utf-8')).hexdigest(),16)%m
+    d = int(hashlib.sha224(word.encode('utf-8')).hexdigest(),16)%m
+    bloomfilter[a-1] += -1
+    bloomfilter[b-1] += -1
+    bloomfilter[c-1] += -1
+    bloomfilter[d-1] += -1
+
+for i in range(n): #add every word in the library to the bloom filter
+  add(lst[i])
