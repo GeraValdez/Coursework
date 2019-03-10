@@ -1,0 +1,85 @@
+from itertools import product
+from string import ascii_lowercase
+import random 
+import string 
+import hashlib
+
+#We are creating all possible three letter strings
+#We add the first thousand to our bloom filter
+#We use the rest (16,756) to test for false positives
+
+#The graph below adds one item at a time and compares
+#the other 16,756 possible strings and counts the total
+#number of false positives. Then this is compared to the
+#theoretical number
+
+m = 1000 #size of the bloom filter
+n = 17576 #total number of three letter strings
+# k = 4
+words = [''.join(i) for i in product(ascii_lowercase, repeat = 3)]
+bloomfilter = [0] * m
+lst = words[0:999] #this array will contain the first 1000 three letter words
+test = words[1000:]
+falsepositives = []
+
+def add(word):
+  a = hash(word)%m
+  b = int(hashlib.md5(word.encode('utf-8')).hexdigest(),16)%m
+  c = int(hashlib.sha1(word.encode('utf-8')).hexdigest(),16)%m
+  d = int(hashlib.sha224(word.encode('utf-8')).hexdigest(),16)%m
+  bloomfilter[a-1] += 1
+  bloomfilter[b-1] += 1
+  bloomfilter[c-1] += 1
+  bloomfilter[d-1] += 1
+  
+def contain(word):
+  a = hash(word)%m
+  b = int(hashlib.md5(word.encode('utf-8')).hexdigest(),16)%m
+  c = int(hashlib.sha1(word.encode('utf-8')).hexdigest(),16)%m
+  d = int(hashlib.sha224(word.encode('utf-8')).hexdigest(),16)%m
+  if bloomfilter[a-1]>0 and bloomfilter[b-1]>0 and bloomfilter[c-1]>0 and bloomfilter[d-1]>0:
+    return True
+  else:
+    return False
+  
+def delete(word):
+  if contain(word) == True:
+    a = hash(word)%m
+    b = int(hashlib.md5(word.encode('utf-8')).hexdigest(),16)%m
+    c = int(hashlib.sha1(word.encode('utf-8')).hexdigest(),16)%m
+    d = int(hashlib.sha224(word.encode('utf-8')).hexdigest(),16)%m
+    bloomfilter[a-1] += -1
+    bloomfilter[b-1] += -1
+    bloomfilter[c-1] += -1
+    bloomfilter[d-1] += -1
+    
+    
+for i in range(len(lst)): #for every word we add to Bloom Filter
+  add(lst[i])             #we calculate the total number of false positives
+  var = 0
+  for j in range(len(test)):
+    if contain(test[j]) == True:
+      var += 1
+  falsepositives.append(var)
+  
+  ##Graph##
+  
+  import matplotlib.pyplot as plt
+import math
+
+x = []
+expectedrate = [0]
+
+for i in range(len(lst)):
+  x.append(i)
+  falsepositives[i] = falsepositives[i]/16576 #false positive rate = total number of false positives / total number of observations
+  
+for i in range(1,len(lst)):
+  expectedrate.append(pow(1 - math.exp(-4 / (1000 / i)), 4))
+  
+plt.plot(x, falsepositives)
+plt.plot(x, expectedrate)
+plt.xlabel('Number of items')
+plt.ylabel('False positive rate')
+plt.title('False positive rate as function of n')
+plt.show()
