@@ -1,0 +1,38 @@
+import pandas as pd
+
+def mutations(ListA, ListB):
+    m = len(ListA)
+    n = len(ListB)
+    dp = [[0 for x in range(m+1)] for x in range(n+1)]  #Generate a matrix to store results
+    for i in range(m+1):
+      for j in range(n+1):                              #We iterate for every possible value (i,j) between (0,0) and (m,n).
+        if i == 0:                                      #We implement a dynamic programming function
+            dp[i][j] = j
+        elif j == 0:
+            dp[i][j] = i
+        elif ListA[i-1] == ListB[j-1]:
+            dp[i][j] = dp[i-1][j-1]
+        else:
+            dp[i][j] = 1 + min(dp[i][j-1], dp[i-1][j], dp[i-1][j-1]) #We use min because are trying to find the minimum number of
+    return dp[m][n]                                                  #mutations needed to get x.
+
+def mutations_matrix(strings):                          #This function is similar in essence to setStrings_matrix(strings), except
+    i = 0                                               #that this time we fill the matrix by calling the function mutation
+    j = 0
+    l = len(strings)
+    M = [[0 for x in range(l+1)] for x in range(l+1)]
+    while i < l:
+      while j < l:
+        if i > j:
+          M[i+1][j+1] = mutations(strings[i][1],strings[j][1])
+        j += 1
+      j = 0
+      i += 1
+    M.pop(0)
+    for row in M:
+      del row[0]
+    df = pd.DataFrame(M)
+    df.to_csv('df.csv', index = True, header = True, sep = ' ')
+    return df
+
+mutations_matrix(strings)
