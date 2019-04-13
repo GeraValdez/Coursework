@@ -1,0 +1,71 @@
+import pandas as pd
+
+ListA = "Valdez"
+ListB = "abcdef"
+
+def len_LCS(ListA, ListB):                              #We take two arrays as an input. The idea is to use dynamic programming
+    m = len(ListA)                                      #and calculate the next value based on previous answers in a bottom-up approach.
+    n = len(ListB)
+    L = [[0 for x in range(n+1)] for x in range(m+1)]   #Here we create the matrix that will store our answers. In simple terms, if ListA
+    for i in range(m+1):                                #and ListB share an item, we increase the count by one. If not, then we calculate
+      for j in range(n+1):                              #the value L[i][j] as max(L[i-1][j], L[i][j-1]).
+        if i == 0 or j == 0:
+          L[i][j] = 0
+        elif ListA[i-1] == ListB[j-1]:
+          L[i][j] = L[i-1][j-1] + 1
+        else:                                           #The output will be the length of the LCS between both strings. 
+          L[i][j] = max(L[i-1][j], L[i][j-1])           #The right-most bottom-most cell in the matrix tells us the length
+    return L[m][n]                                      #of the longest common subsequence.
+
+#For example, len_LCS(ListA, ListB): 3
+
+def LCS_matrix(ListA, ListB):                           #This function is essentially similar to the previous one, except the output
+    m = len(ListA)                                      #is different. Instead of the length, we output the matrix as a dataframe.
+    n = len(ListB)
+    L = [[0 for x in range(n+1)] for x in range(m+1)]
+    for i in range(m+1):
+      for j in range(n+1):
+        if i == 0 or j == 0:
+          L[i][j] = 0
+        elif ListA[i-1] == ListB[j-1]:
+          L[i][j] = L[i-1][j-1] + 1
+        else:
+          L[i][j] = max(L[i-1][j], L[i][j-1])
+    L.pop(0)
+    for row in L:
+        del row[0]
+    df = pd.DataFrame(L, index = [_ for _ in ListA], columns = [_ for _ in ListB]) #Here we turn the matrix into a dataframe
+    df.to_csv('df.csv', index = True, header = True, sep = ' ')
+    return df                                                                      #And our output is the dataframe itself.
+  
+
+def LCS(ListA, ListB):                                   #Again, everything is the same until the creation and filling of the matrix.
+    m = len(ListA)
+    n = len(ListB)
+    L = [[0 for x in range(n+1)] for x in range(m+1)]
+    for i in range(m+1):
+        for j in range(n+1):
+            if i == 0 or j == 0:
+                L[i][j] = 0
+            elif ListA[i-1] == ListB[j-1]:
+                L[i][j] = L[i-1][j-1] + 1
+            else:
+                L[i][j] = max(L[i-1][j], L[i][j-1])
+    index = L[m][n]
+    LCS = [""] * (index+1)                              #Then, we use the matrix to determine that LCS itself. If the current character
+    LCS[index] = "\0"                                   #in both strings is the same, then it must be part of the LCS.
+    i = m
+    j = n
+    while i > 0 and j > 0:
+        if ListA[i-1] == ListB[j-1]:
+            LCS[index] = ListA[i-1]
+            i-=1
+            j-=1
+            index-=1
+        elif L[i-1][j] > L[i][j-1]:
+            i-=1
+        else:
+            j-=1
+    return ("".join(LCS))                              #As previously explained, here we concatenate everything into a string. The LCS.
+    
+    #For example, LCS(ListA, ListB): 'ade'
