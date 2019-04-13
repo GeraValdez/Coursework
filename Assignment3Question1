@@ -51,8 +51,8 @@ def LCS(ListA, ListB):                                   #Again, everything is t
                 L[i][j] = L[i-1][j-1] + 1
             else:
                 L[i][j] = max(L[i-1][j], L[i][j-1])
-    index = L[m][n]
-    LCS = [""] * (index+1)                              #Then, we use the matrix to determine that LCS itself. If the current character
+    index = L[m][n]                                     #We create a character array to store the lcs string. Then, we use
+    LCS = [""] * (index+1)                              #the matrix to determine that LCS itself. If the current character
     LCS[index] = "\0"                                   #in both strings is the same, then it must be part of the LCS.
     i = m
     j = n
