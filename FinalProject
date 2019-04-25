@@ -58,9 +58,31 @@ print (string) #Original String
 print (BWT(string)[0]) #Burrows Wheeler Transform
 print (reverse_BWT(BWT(string))) #Burrows Wheeler Transform and Reverse Transform == original string
 
-"Gerardo Javier Valdez Lozano"
-"oozr    VzrJlriGdvaandLeeaaeo"
-"Gerardo Javier Valdez Lozano"
+# "Gerardo Javier Valdez Lozano"
+# "oozr    VzrJlriGdvaandLeeaaeo"
+# "Gerardo Javier Valdez Lozano"
+
+###############################################
+
+### Run Length Endoding ###
+from re import sub
+
+def encode(string): #Run length encoding implementation, e.g., encode('WWWXXWWWW') = 'W3X2W4'
+    return sub(r'(.)\1*', lambda m: str(len(m.group(0))) + m.group(1), string)
+
+def decode(string): #Run length decoding implementation, e.g., decode('W3X2W4') = 'WWWXXWWWW'
+    return sub(r'(\d+)(\D)', lambda m: m.group(2) * int(m.group(1)), string)
+
+### Test Run Length Encoding ###
+
+DNA = "AAAACCCGTTTGGG"
+print (encode(DNA))
+print (decode(encode(DNA)))
+print (decode(encode(DNA)) == DNA)
+
+# "4A3C1G3T3G"
+# "AAAACCCGTTTGGG"
+# True
 
 ###############################################
 
@@ -106,10 +128,10 @@ print (compression(string2)) #Original string + 'B' to test run the error
 print (decompression(compression(string))) #Compression + Decompression == original string
 print (decompression(compression(string))==string) #Testing if output == original string; True
 
-#000101101100111110101001010010110111
-#Error: A DNA sequence can only have the nucleotides A, C, G, and T
-#ACCGTATTGGGCCAGTCT
-#True
+# "000101101100111110101001010010110111"
+# "Error: A DNA sequence can only have the nucleotides A, C, G, and T"
+# "ACCGTATTGGGCCAGTCT"
+# True
 
 ###############################################
 
