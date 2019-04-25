@@ -1,0 +1,115 @@
+### Burrows Wheeler Transition ###
+  
+def BWT(string):
+    string = " " + string #Append $ at the beginning of the string
+    n = len(string)
+    output = ""
+    output2 = []
+    D = [[] for i in range(n)] #Generate a nested list 1 x n
+    D[0] = string
+    for i in range(n-1): #cyclic shifts following the BWT algorithm
+        D[i+1] = D[i][-1] + D[i][:-1] #We are moving the first element to the last position
+    D.sort()
+    for i in range(n):
+        output += (D[i][n-1])  #Take out the last column
+    for i in range(n):
+        output2.append(D[i].index(" ")) 
+    return output, output2 #double output the last column BW Transform AND index for '$' in BWT**
+  
+def _mers(BWT_output): #Simple two-mers, requires just the output of the BWT
+    list1 = BWT_output
+    list2 = sorted(BWT_output) #list2 will always be the first column of the Burrows Wheeler Transform
+    x = [''.join(str(a)+b) for a,b in zip(list1,list2)] #We will merge the mers and sort again to produce
+    x = sorted(x)
+    return x, BWT_output
+  
+def _multimers(output, BWT_output): #Multimerse requires the output of the previous 
+    ListA = output                  #_mers or _multimers AND the output of the BWT
+    ListB = BWT_output
+    x = [''.join(str(a)+b) for a,b in zip(ListB,sorted(ListA))] #merges characters of same index together
+    x = sorted(x) #For example. If list1 = [1,2] and list2 = ["one", "two"], then we return ['1one','2two']
+    return x, BWT_output
+
+def mers(BWT_output): #Essentially combines _mers and _multimerse so we can work with just one input
+    if len(BWT_output[0]) == 1:           #We do this because it helps to make it recursive friendly
+        x = _mers(BWT_output)[0]
+        L = _mers(BWT_output)[1]
+    else:             
+        x = _multimers(BWT_output[0], BWT_output[1])[0]
+        L = _multimers(BWT_output[0], BWT_output[1])[1]
+    return x, L
+  
+def reverse_BWT(BWT_output): #Calls mers just the right amount of times to rebuild the BWT matrix
+    var = mers(BWT_output[0])
+    for i in range(len(BWT_output[0])-2): #We call mers once before, and we added a character space, hence -2
+        var = mers(var)
+    var = var[0]
+    return var[0][1:]
+  
+# **Originally I was using '$', but it just so happens that space is lexicographically sorted before
+# the dollar sign, and that messes up with returning the right array back. Hence I changed it to a space
+# After a number of successful tests I realised that this was my best option
+
+### Testing the Burrows Wheeler Transform ###
+
+string = "Gerardo Javier Valdez Lozano"
+
+print (string) #Original String
+print (BWT(string)[0]) #Burrows Wheeler Transform
+print (reverse_BWT(BWT(string))) #Burrows Wheeler Transform and Reverse Transform == original string
+
+"Gerardo Javier Valdez Lozano"
+"oozr    VzrJlriGdvaandLeeaaeo"
+"Gerardo Javier Valdez Lozano"
+
+###############################################
+
+### Huffman Coding Simple Compression ###
+
+def compression(string):         #The compression algorithm is simple:
+  compress_output = ""           #For each letter A, C, G, T change it to binary
+  for i in range(len(string)):   #'00' stands for A, '01' stands for C, and so on
+    if string[i] == 'A':
+      compress_output += '00'
+    elif string[i] == 'C':
+      compress_output += '01'
+    elif string[i] == 'G':
+      compress_output += '10'
+    elif string[i] == 'T':
+      compress_output += '11'   #If we receive an input different from
+    else:                       #A,C,G,T return error
+      return "Error: A DNA sequence can only have the nucleotides A, C, G, and T"
+  return compress_output
+
+def decompression(compress_output): #The decompression algorithm is simple:
+  string = ""                       #For each two bits, change them to A,C,G,T
+  for i in range(len(compress_output)//2):
+    if compress_output[(2*i):(2*i+2)] == '00':
+      string += 'A'
+    elif compress_output[(2*i):(2*i+2)] == '01':
+      string += 'C'
+    elif compress_output[(2*i):(2*i+2)] == '10':
+      string += 'G'
+    elif compress_output[(2*i):(2*i+2)] == '11':
+      string += 'T'
+    else:                       #If we receive something non-binary return error
+      return "Error: The input should be binary"
+  return string
+  
+### Testing the Huffman Compression ###
+
+string = "ACCGTATTGGGCCAGTCT"
+string2 = "ACCGTATTGGGCCAGTCTB"
+
+print (compression(string)) #Original string
+print (compression(string2)) #Original string + 'B' to test run the error
+print (decompression(compression(string))) #Compression + Decompression == original string
+print (decompression(compression(string))==string) #Testing if output == original string; True
+
+#000101101100111110101001010010110111
+#Error: A DNA sequence can only have the nucleotides A, C, G, and T
+#ACCGTATTGGGCCAGTCT
+#True
+
+###############################################
+
