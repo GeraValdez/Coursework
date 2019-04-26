@@ -235,3 +235,42 @@ print (str_decompression(str_compression(string))==string) #Testing if output ==
 # "Error: A DNA sequence can only have the nucleotides A, C, G, and T"
 # "ACCGTATTGGGCCAGTCTTG"
 # True
+
+###############################################
+
+### DNA sequence ###
+
+DNA = "TCTTGAAATCCATTTTTAGCCCAACCAGATCATCCCGCGCGAAGTGCTCGAACGAGGCTTCGCACCCGTCCGGATTGGTCATCCGGTCCGGGATGGGGAACAAGATCATCAATGTTTGTCCATGGAGGAAAACATGGCGTTTCGACCGCTTCATGATCGTATTCTCGTCCGCCGCGTCGAGTCCGAAGAGAAGACCAAAGGCGGCATCATCATCCCCGACACTGCCAAGGAGAAGCCCCAGGAAGGCGAAGTCCTCGCTGTAGGTCCCGGCGCGCGCGGCGAACAGGGTCAGATCCAGCCCTCGACGTCAAGGTGGGCGACCGCATCCTGTTCGGCAAGTGGTCCGGCACCGAGATCAAGATCGACGGAGAAGATCTCCTGATCATGAAGGAAAGCGATGTCATGGGAATCATCGAGGCCCGGGCGCCGAGAAGATAGCCGCCTGATAACGCGAAGATACAGTCAACAAGCTGCCTATC"
+
+def count_pairs(string): #This function attempts to count the number of pairs in a string
+    pairs_count = 0
+    unique_characters = set(string) #We make a list of all the different characters and we use
+    for character in unique_characters: #this list to go one by one checking if pairs exist
+        pairs_count += string.count(character + character) #and count how many exist
+    return pairs_count #We return the total number of pairs in a string
+    
+### Analyzing the DNA sequence ###
+
+print (len(DNA)) #479 bytes
+print (count_pairs(DNA)) #101 pairs
+
+#Let us transform the DNA sequence using Burrows Wheeler Transform
+BWT_DNA = (BWT(DNA))
+print (BWT_DNA[0])
+print (count_pairs(BWT_DNA[0])) #92 pairs, apparently our result just became less compressible
+
+# Running Length Algorithm in Action:
+
+print (len(encode(DNA))) #The DNA encoded using the running length algorithm alone has a size = 712 bytes
+print (len(encode(BWT_DNA[0]))) #The DNA encoded using both BWT and running length has a size = 726 bytes
+print (decode(encode(BWT_DNA[0])) == BWT_DNA[0])
+#We would normally expect the transform to be more compressible, and compression algorithms
+#to reduce the memory needed to store something. This time both  of them backfired.
+
+# Huffman Coding:
+
+print (len(compression(DNA)))        #The DNA encoded using Huffman coding requires 958 bits
+print (len(compression(BWT_DNA[0]))) #The DNA encoded using both BWT and Huffman coding requires 958 bits
+print (decompression(compression(DNA))==DNA)
+
+# String Encoding:
