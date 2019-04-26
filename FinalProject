@@ -98,22 +98,28 @@ def compression(string):         #The compression algorithm is simple:
     elif string[i] == 'G':
       compress_output += '10'
     elif string[i] == 'T':
-      compress_output += '11'   #If we receive an input different from
-    else:                       #A,C,G,T return error
+      compress_output += '11'   
+    elif string[i] == ' ':      #If we receive an input different from
+      compress_output += ' '    #A,C,G,T return error
+    else:                       
       return "Error: A DNA sequence can only have the nucleotides A, C, G, and T"
   return compress_output
-
+  
 def decompression(compress_output): #The decompression algorithm is simple:
   string = ""                       #For each two bits, change them to A,C,G,T
   for i in range(len(compress_output)//2):
-    if compress_output[(2*i):(2*i+2)] == '00':
+    j = 0
+    if compress_output[(2*i-j):(2*i-j+2)] == '00':
       string += 'A'
-    elif compress_output[(2*i):(2*i+2)] == '01':
+    elif compress_output[(2*i-j):(2*i-j+2)] == '01':
       string += 'C'
-    elif compress_output[(2*i):(2*i+2)] == '10':
+    elif compress_output[(2*i-j):(2*i-j+2)] == '10':
       string += 'G'
-    elif compress_output[(2*i):(2*i+2)] == '11':
+    elif compress_output[(2*i-j):(2*i-j+2)] == '11':
       string += 'T'
+    elif compress_output[(2*i)] == ' ':
+      string += ' '
+      j += 1
     else:                       #If we receive something non-binary return error
       return "Error: The input should be binary"
   return string
