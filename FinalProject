@@ -274,3 +274,7 @@ print (len(compression(BWT_DNA[0]))) #The DNA encoded using both BWT and Huffman
 print (decompression(compression(DNA))==DNA)
 
 # String Encoding:
+
+print (len(str_compression(DNA)))  #The DNA encoded using the string encoding requires 958 bits
+print (len(str_compression(BWT_DNA[0]))) #The DNA encoded using the string encoding and the BWT requires 958 bits
+print (str_decompression(str_compression(BWT_DNA[0])))
