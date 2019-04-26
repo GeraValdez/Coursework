@@ -251,30 +251,35 @@ def count_pairs(string): #This function attempts to count the number of pairs in
     
 ### Analyzing the DNA sequence ###
 
-print (len(DNA)) #479 bytes
-print (count_pairs(DNA)) #101 pairs
+print ("The DNA sequence requires", len(DNA), "bytes") #479 bytes
+print ("The original DNA sequence contains", count_pairs(DNA), "pairs") #101 pairs
 
 #Let us transform the DNA sequence using Burrows Wheeler Transform
 BWT_DNA = (BWT(DNA))
-print (BWT_DNA[0])
-print (count_pairs(BWT_DNA[0])) #92 pairs, apparently our result just became less compressible
+#print (BWT_DNA[0])
+print ("After performing the Burrows Wheeler Transform, we count", count_pairs(BWT_DNA[0]), "pairs")
+
+if count_pairs(BWT_DNA[0]) < count_pairs(DNA): #92 pairs, apparently our result just became less compressible
+  print ("We conclude that the BWT failed to make our data more compressible")
+else:
+  print ("We conclude that the BWT helped our data become more compressible")
 
 # Running Length Algorithm in Action:
 
-print (len(encode(DNA))) #The DNA encoded using the running length algorithm alone has a size = 712 bytes
-print (len(encode(BWT_DNA[0]))) #The DNA encoded using both BWT and running length has a size = 726 bytes
+print ("The DNA sequence compressed using the running length algorithm requires", len(encode(DNA)), "bytes of memory") #712 bytes
+print ("The DNA sequence compressed using both the BWT and the running length algorithm requires", len(encode(BWT_DNA[0])), "bytes of memory") #726 bytes
 print (decode(encode(BWT_DNA[0])) == BWT_DNA[0])
 #We would normally expect the transform to be more compressible, and compression algorithms
 #to reduce the memory needed to store something. This time both  of them backfired.
 
 # Huffman Coding:
 
-print (len(compression(DNA)))        #The DNA encoded using Huffman coding requires 958 bits
-print (len(compression(BWT_DNA[0]))) #The DNA encoded using both BWT and Huffman coding requires 958 bits
+print ("The DNA sequence compressed using Huffman coding requires", len(compression(DNA)), "bits of memory") #958 bits
+print ("The DNA sequence compressed using both BWT and Huffman coding requires", len(compression(BWT_DNA[0])), "bits of memory") #958 bits
 print (decompression(compression(DNA))==DNA)
 
 # String Encoding:
 
-print (len(str_compression(DNA)))  #The DNA encoded using the string encoding requires 958 bits
-print (len(str_compression(BWT_DNA[0]))) #The DNA encoded using the string encoding and the BWT requires 958 bits
+print ("The DNA sequence compressed using Huffman coding requires", len(str_compression(DNA)), "bits of memory")  #958 bits
+print ("The DNA sequence compressed using both BWT and Huffman coding requires", len(str_compression(BWT_DNA[0])), "bits of memory") #958 bits
 print (str_decompression(str_compression(BWT_DNA[0])))
