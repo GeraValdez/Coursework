@@ -135,3 +135,97 @@ print (decompression(compression(string))==string) #Testing if output == origina
 
 ###############################################
 
+### String Compression ###
+
+def str_compression(string):          #This is painfully similar and repetitive
+  compress_output = ""                #compared to Huffman coding, except we
+  for i in range(len(string)//2):     #try to optimize for strings of 2 letters
+    if string[2*i:2*i+2] == 'AA':     #We could do the same for strings longer
+      compress_output += '0000'       #than two, but it is similar except with
+    elif string[2*i:2*i+2] == 'AC':   #four times as many combinations
+      compress_output += '0001'       #and the code would likely be four times
+    elif string[2*i:2*i+2] == 'AG':   #longer.
+      compress_output += '0010'
+    elif string[2*i:2*i+2] == 'AT':
+      compress_output += '0011'
+    elif string[2*i:2*i+2] == 'CA':
+      compress_output += '0100'
+    elif string[2*i:2*i+2] == 'CC':
+      compress_output += '0101'
+    elif string[2*i:2*i+2] == 'CG':
+      compress_output += '0110'
+    elif string[2*i:2*i+2] == 'CT':
+      compress_output += '0111'
+    elif string[2*i:2*i+2] == 'GA':
+      compress_output += '1000'
+    elif string[2*i:2*i+2] == 'GC':
+      compress_output += '1001'
+    elif string[2*i:2*i+2] == 'GG':
+      compress_output += '1010'
+    elif string[2*i:2*i+2] == 'GT':
+      compress_output += '1011'
+    elif string[2*i:2*i+2] == 'TA':
+      compress_output += '1100'
+    elif string[2*i:2*i+2] == 'TC':
+      compress_output += '1101'
+    elif string[2*i:2*i+2] == 'TG':
+      compress_output += '1110'
+    elif string[2*i:2*i+2] == 'TT':
+      compress_output += '1111'
+    else:
+      return "Error: A DNA sequence can only have the nucleotides A, C, G, and T"
+  return compress_output
+
+def str_decompression(compress_output):    #Same as above, but for decompression
+  string = ""                              #Painfully similar, unnecessarily large
+  for i in range(len(compress_output)//4): #and complicated. Same results
+    if compress_output[(4*i):(4*i+4)] == '0000':
+      string += 'AA'
+    elif compress_output[(4*i):(4*i+4)] == '0001':
+      string += 'AC'
+    elif compress_output[(4*i):(4*i+4)] == '0010':
+      string += 'AG'
+    elif compress_output[(4*i):(4*i+4)] == '0011':
+      string += 'AT'
+    elif compress_output[(4*i):(4*i+4)] == '0100':
+      string += 'CA'
+    elif compress_output[(4*i):(4*i+4)] == '0101':
+      string += 'CC'
+    elif compress_output[(4*i):(4*i+4)] == '0110':
+      string += 'CG'
+    elif compress_output[(4*i):(4*i+4)] == '0111':
+      string += 'CT'
+    elif compress_output[(4*i):(4*i+4)] == '1000':
+      string += 'GA'
+    elif compress_output[(4*i):(4*i+4)] == '1001':
+      string += 'GC'
+    elif compress_output[(4*i):(4*i+4)] == '1010':
+      string += 'GG'
+    elif compress_output[(4*i):(4*i+4)] == '1011':
+      string += 'GT'
+    elif compress_output[(4*i):(4*i+4)] == '1100':
+      string += 'TA'
+    elif compress_output[(4*i):(4*i+4)] == '1101':
+      string += 'TC'
+    elif compress_output[(4*i):(4*i+4)] == '1110':
+      string += 'TG'
+    elif compress_output[(4*i):(4*i+4)] == '1111':
+      string += 'TT'
+    else:
+      return "Error: The input should be binary"
+  return string
+  
+### Testing the string compression ###
+
+string = "ACCGTATTGGGCCAGTCTTG"
+string2 = "ACCGTATTGGGCCAGTCTTB"
+
+print (str_compression(string)) #Original string
+print (str_compression(string2)) #Original string + 'B' to test run the error
+print (str_decompression(str_compression(string))) #Compression + Decompression == original string
+print (str_decompression(str_compression(string))==string) #Testing if output == original string; True
+
+# "0001011011001111101010010100101101111110"
+# "Error: A DNA sequence can only have the nucleotides A, C, G, and T"
+# "ACCGTATTGGGCCAGTCTTG"
+# True
