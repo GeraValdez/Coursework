@@ -1,0 +1,60 @@
+#Copy-paste from "https://gist.github.com/diamonaj/3795bfc2e6349d00aa0ccfe14102858d"
+
+foo <- read.csv("https://course-resources.minerva.kgi.edu/uploaded_files/mke/00086677-3767/peace.csv")
+foo <- foo[, c(6:8, 11:16, 99, 50, 114, 49, 63, 136, 109, 126, 48, 160, 142, 10)]
+foo <- foo[c(-19, -47), ]
+which(is.na(foo) == TRUE)
+
+head(foo)
+#My Work begins here:
+
+#Model 1: not considering interaction terms
+glm1 <- glm(pbs2s3 ~ wartype + logcost + wardur + factnum + factnum2 + trnsfcap + develop + exp + decade + treaty + untype4, data = foo, family = binomial)
+summary(glm1)
+
+#Model 2: considering interaction terms
+glm2 <- glm(pbs2s3 ~ wartype + logcost + wardur + factnum + factnum2 + trnsfcap + develop + exp + decade + treaty + untype4 + untype4*wardur, data = foo, family = binomial)
+summary(glm2)
+
+coefficients_list1 <- coef(glm1)
+coefficients_list2 <- coef(glm2)
+
+#Calculating the treatment effect as a function of war duration (without interaction term)
+#We keep everything constant at their mean, except for war duration.
+#Treatment effect is E[Y|D=1]-E[Y|D=0]
+treated <- list()
+untreated <- list()
+Treatment_effect <- list()
+
+for (wardur in 1:315) {
+  X.treat <- c(mean(foo$wartype), mean(foo$logcost), wardur, mean(foo$factnum), mean(foo$factnum2),
+               mean(foo$trnsfcap), mean(foo$develop), mean(foo$exp), mean(foo$decade), mean(foo$treaty), 1)
+  X.control <- c(mean(foo$wartype), mean(foo$logcost), wardur, mean(foo$factnum), mean(foo$factnum2),
+               mean(foo$trnsfcap), mean(foo$develop), mean(foo$exp), mean(foo$decade), mean(foo$treaty), 0)
+  treated[wardur] <- exp(coefficients_list1[1] + sum(coefficients_list1[2:length(coefficients_list1)]*X.treat)) / (1+exp(coefficients_list1[1] + sum(coefficients_list1[2:length(coefficients_list1)]*X.treat)))
+  untreated[wardur] <- exp(coefficients_list1[1] + sum(coefficients_list1[2:length(coefficients_list1)]*X.control)) / (1+exp(coefficients_list1[1] + sum(coefficients_list1[2:length(coefficients_list1)]*X.control)))}
+
+for (wardur in 1:315) { Treatment_effect[wardur] <- as.numeric(treated[wardur]) - as.numeric(untreated[wardur]) }
+
+
+#Calculating the treatment effect as a function of war duration (with interaction term)
+#Similar procedure as above, this time considering the interaction term
+treated_int <- list()
+untreated_int <- list()
+Treatment_effect_int <- list()
+
+for (wardur in 1:315) {
+  X.treat <- c(mean(foo$wartype), mean(foo$logcost), wardur, mean(foo$factnum), mean(foo$factnum2),
+               mean(foo$trnsfcap), mean(foo$develop), mean(foo$exp), mean(foo$decade), mean(foo$treaty), 1, 1*wardur)
+  X.control <- c(mean(foo$wartype), mean(foo$logcost), wardur, mean(foo$factnum), mean(foo$factnum2),
+                 mean(foo$trnsfcap), mean(foo$develop), mean(foo$exp), mean(foo$decade), mean(foo$treaty), 0, 0)
+  treated_int[wardur] <- exp(coefficients_list2[1] + sum(coefficients_list2[2:length(coefficients_list2)]*X.treat)) / (1+exp(coefficients_list2[1] + sum(coefficients_list2[2:length(coefficients_list2)]*X.treat)))
+  untreated_int[wardur] <- exp(coefficients_list2[1] + sum(coefficients_list2[2:length(coefficients_list2)]*X.control)) / (1+exp(coefficients_list2[1] + sum(coefficients_list2[2:length(coefficients_list2)]*X.control)))}
+
+for (wardur in 1:315) { Treatment_effect_int[wardur] <- as.numeric(treated_int[wardur]) - as.numeric(untreated_int[wardur]) }
+
+#Graphing the Treatment Effect (with and without interaction term) as a function of war duration
+plot(1:315, Treatment_effect, type = "l", ylim = c(0, 0.7), main = "Treatment as function of war duration", sub = "", xlab = "War Duration", ylab = "Treatment Effect")
+par(new=TRUE)
+plot(1:315, Treatment_effect_int, type = "p", pch = "." , ylim = c(0, 0.7), main = "", sub = "", xlab = "", ylab = "")
+legend(150, 0.3, legend=c("Without Interaction", "With Interaction"), lty = 1:2, cex = 0.8)
