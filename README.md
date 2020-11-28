@@ -1,6 +1,6 @@
 # Coursework
 
-Every Computer Science course at Minerva requires small assignments to be submitted before each class. I created this repo to combine all of the existing repositories into just one. For this reason, the code will be in different languages including Python, R, and Stata as well as Jupyter Notebooks. This repo is not extensive, and does not include all of my work and assignments.
+Every Computer Science course at Minerva requires small assignments to be submitted before each class. I created this repo to combine all of the existing repositories into just one. For this reason, the code will be in different languages including Python, R, and Stata as well as Jupyter Notebooks. This repo is not extensive and does not include all of my work and assignments.
 
 ## Courses
 
