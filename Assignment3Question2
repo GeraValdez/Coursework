@@ -1,0 +1,39 @@
+import pandas as pd
+
+##
+
+#We need to import len_LCS(stringA, stringB) from the previous question. 
+#Link: https://github.com/GeraValdez/CS110/blob/master/Assignment3Question1
+#In short, this function calculates the length of the longest common subsequence. 
+
+##
+
+strings = [(0, 'CAGCGGGTGCGTAATTTGGAGAAGTTATTCTGCAACGAAATCAATCCTGTTTCGTTAGCTTACGGACTACGACGAGAGGGTACTTCCCTGATATAGTCAC'),
+(1, 'CAAGTCGGGCGTATTGGAGAATATTTAAATCGGAAGATCATGTTACTATGCGTTAGCTCACGGACTGAAGAGGATTCTCTCTTAATGCAA'),
+(2, 'CATGGGTGCGTCGATTTTGGCAGTAAAGTGGAATCGTCAGATATCAATCCTGTTTCGTAGAAAGGAGCTACCTAGAGAGGATTACTCTCACATAGTA'),
+(3, 'CAAGTCCGCGATAAATTGGAATATTTGTCAATCGGAATAGTCAACTTAGCTGGCGTTAGCTTTACGACTGACAGAGAGAAACCTGTCCATCACACA'),
+(4, 'CAGTCCGGCGTAATTGGAGAATATTTTGCAATCGGAAGATCAATCTTGTTAGCGTTAGCTTACGACTGACGAGAGGGATACTCTCTCTAATACAA'),
+(5, 'CACGGGCTCCGCATCTATTTTGGGTCAAGTTGCATATCAGTCATCGACAATCAAACACTGTTTTGCGGTAGATAAGATACGACTGAGAGAGGACGTTCGCTCGAATATAGTTAC'),
+(6, 'CACGGGTCCAATTTTGGAGTAAGTTGATATCGTCACGAAATCAATCCTGTTTCGGTAGTATAGGACTACGACGAGAGAGGACGTTCCTCTGATATAGTTAC'),
+(7, 'GGTCCGTCAATTTTGGAGTAAGTTGATATCGTCACGAAATCAATCCTGTTTCGGTAGTATAGGACTACGACGAGAGAGGACGTTCCTCTGATATAGTTAC'),
+(8, 'CACGGGAATCCGTCAATTTTGGAGTAAGTTGATATCGTCACGAAATCAATCCTGTTTCGGTAGTATAGGACTACGACGAGAGAGGACGTTCCTCTGATATAGTTAC'),
+(9, 'CACGGGTCCGTCAATTTTGGAGTAAGTTGATATCGTCACGAAATCAATCCTGTTTCGGTAGTATAGGACTACGACGAGAGAGGACGTTCCTCTGATATAGTTAC')]
+
+def setStrings_matrix(strings):
+  i = 0
+  j = 0
+  l = len(strings)
+  M = [[0 for x in range(l+1)] for x in range(l+1)]  #We generate a matrix to store the results
+  while i < l:                                       #Then the double while statement, plus the if statement
+    while j < l:                                     #result in (1,0); (2,0); (2,1); (3,0); (3,1); (3,2)...
+      if i > j:                                      #Basically we will not calculate (1,2) and (2,1) twice and so on
+        M[i+1][j+1] = len_LCS(strings[i][1],strings[j][1])  #Here we fill the matrix with the length of the respective LCS
+      j += 1
+    j = 0
+    i += 1
+  M.pop(0)
+  for row in M:
+    del row[0]
+  df = pd.DataFrame(M)                               #We turn everything into a dataframe, and we output the df.
+  df.to_csv('df.csv', index = True, header = True, sep = ' ')
+  return df

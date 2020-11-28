@@ -1,0 +1,28 @@
+import random
+
+integer = 5
+
+def random_list(integer):
+    lst = []
+    for x in range (integer):
+        lst.append(random.randint(0, 100))
+    return lst
+
+def sorted_(lst):
+    i = 0
+    while i < (len(lst)-1):
+        if lst[i+1] > lst[i]:
+            i += 1
+        else:
+            return False
+    return True
+
+def worst_sort(lst):
+    while sorted_(lst) == False:
+        random.shuffle(lst)
+    return lst
+
+lst = random_list(integer)
+
+print lst
+print worst_sort(lst)

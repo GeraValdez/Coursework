@@ -1,0 +1,55 @@
+import random
+
+integer = 5
+count = []
+
+def random_list(integer):
+    lst = []
+    for x in range (integer):
+        lst.append(random.randint(0, 100))
+    return lst
+
+def merge(left, right):
+    array = []
+    count_merge = 0
+    while len(left) > 0 and len(right) > 0:
+        if left[0] < right[0]:
+            array.append(left[0])
+            left.pop(0)
+            count_merge += 1
+        else:
+            array.append(right[0])
+            right.pop(0)
+            count_merge += 1
+    while len(left) > 0:
+        array.append(left[0])
+        left.pop(0)
+        count_merge += 1
+    while len(right) > 0:
+        array.append(right[0])
+        right.pop(0)
+        count_merge += 1
+    count.append(count_merge)
+    return array
+    print array
+    
+def merge_sort(lst):
+    count_merge_sort = 0
+    if len(lst) == 1:
+        return lst
+    else:
+        left = lst[0:len(lst)/2]
+        right = lst[len(lst)/2:len(lst)]
+        count_merge_sort += 1
+        left = merge_sort(left)
+        right = merge_sort(right)
+    count.append(count_merge_sort)
+    return merge(left, right)
+    print merge(left, right)
+
+lst = random_list(integer)
+print lst
+print merge_sort(lst)
+
+total = sum(count)
+print "Number of steps:", total

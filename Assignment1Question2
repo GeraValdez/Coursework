@@ -1,0 +1,118 @@
+#Question 2
+
+import random
+
+integer = 10
+
+def random_list(integer):
+    lst = []
+    for x in range (integer):
+        lst.append(random.randint(0, 100))
+    return (lst)
+
+def merge_two(left, right):
+    array = []
+    while len(left) > 0 and len(right) > 0:
+        if left[0] < right[0]:
+            array.append(left[0])
+            left.pop(0)
+        else:
+            array.append(right[0])
+            right.pop(0)
+    while len(left) > 0:
+        array.append(left[0])
+        left.pop(0)
+    while len(right) > 0:
+        array.append(right[0])
+        right.pop(0)
+    return (array)
+    
+def merge_three(left, middle, right):
+    array = []
+    while len(left) > 0 and len(middle) > 0 and len(right) > 0:
+        if left[0] <= middle[0] and left[0] <= right[0]:
+            array.append(left[0])
+            left.pop(0) 
+        elif middle[0] <= left[0] and middle[0] <= right[0]:
+            array.append(middle[0])
+            middle.pop(0)
+        elif right[0] <= left[0] and right[0] <= middle[0]:
+            array.append(right[0])
+            right.pop(0)
+    return (array, left, middle, right)
+    
+def threeway_merge(left, middle, right):
+    array = []
+    if len(left) > 0 and len(middle) > 0 and len(right) > 0:
+        output = merge_three(left, middle, right)
+        array = array + output[0]
+        left = output[1]
+        middle = output[2]
+        right = output[3]
+        if len(left) == 0:
+            array = array + merge_two(middle, right)
+        elif len(middle) == 0:
+            array = array + merge_two(left, right)
+        elif len(right) == 0:
+            array = array + merge_two(left, middle)
+    elif len(left) == 0:
+        array = array + merge_two(middle, right)
+    elif len(middle) == 0:
+        array = array + merge_two(left, right)
+    elif len(right) == 0:
+        array = array + merge_two(left, middle)
+    return array
+
+def insertion_sort(lst): 
+    for index in range(1, len(lst)): 
+        key = lst[index] 
+        pos = index-1
+        while pos >=0 and key < lst[pos]:
+            lst[pos+1] = lst[pos]
+            pos += -1
+        lst[pos+1] = key
+    return lst
+        
+def threeway_mergesort(lst):
+    if len(lst) <= 1:
+        return lst
+    else:
+        left = lst[0:len(lst)//3]
+        middle = lst[len(lst)//3:2*len(lst)//3]
+        right = lst[2*len(lst)//3:len(lst)]
+        if len(left) < 3:
+            left = insertion_sort(left)
+        else:
+            left = threeway_mergesort(left)
+        if len(middle) < 3:
+            middle = insertion_sort(middle)
+        else:
+            middle = threeway_mergesort(middle)
+        if len(right) < 3:
+            right = insertion_sort(right)
+        else:
+            right = threeway_mergesort(right)        
+    return (threeway_merge(left, middle, right))
+
+random.seed(6)
+    
+lst1 = random_list(integer)
+print (lst1)
+print (threeway_mergesort(lst1))
+
+lst2 = random_list(integer)
+print (lst2)
+print (threeway_mergesort(lst2))
+
+lst3 = random_list(integer)
+print (lst3)
+print (threeway_mergesort(lst3))
+
+#[80, 83, 48, 26, 0, 66, 47, 76, 37, 77]
+#[0, 26, 37, 47, 48, 66, 76, 77, 80, 83]
+
+#[27, 80, 73, 41, 54, 68, 19, 55, 81, 26]
+#[19, 26, 27, 41, 54, 55, 68, 73, 80, 81]
+
+#[81, 69, 85, 33, 9, 80, 81, 44, 9, 19]
+#[9, 9, 19, 33, 44, 69, 80, 81, 81, 85]
